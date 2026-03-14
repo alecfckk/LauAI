@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LauriAI — Calculadoras</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg1: #d6e8f5;
+  --bg2: #e8d6f0;
+  --bg3: #d6f0e8;
+  --glass: rgba(255,255,255,0.55);
+  --glass-border: rgba(255,255,255,0.75);
+  --glass-hover: rgba(255,255,255,0.68);
+  --ink: #1a1a2a;
+  --mid: #5a6070;
+  --soft: #8090a0;
+  --rose:  #c05048;
+  --teal:  #2a8a70;
+  --amber: #b07020;
+  --rose-bg:  rgba(192,80,72,0.10);
+  --teal-bg:  rgba(42,138,112,0.10);
+  --amber-bg: rgba(176,112,32,0.10);
+  --r: 20px;
+  --blur: blur(24px) saturate(1.6);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #c8dff5 0%, #d8c8ef 35%, #c8eee0 70%, #c8daf5 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  padding: 32px 16px 80px;
+}
+
+/* ── BLOBS ── */
+.blob {
+  position: fixed; border-radius: 50%;
+  filter: blur(80px); pointer-events: none; z-index: 0;
+  animation: drift 12s ease-in-out infinite alternate;
+}
+.blob1 { width:420px;height:420px; background:rgba(180,140,230,.28); top:-80px; left:-80px; animation-delay:0s; }
+.blob2 { width:350px;height:350px; background:rgba(100,200,180,.22); bottom:0; right:-60px; animation-delay:-4s; }
+.blob3 { width:280px;height:280px; background:rgba(120,170,240,.20); top:40%; left:60%; animation-delay:-8s; }
+@keyframes drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(30px,20px) scale(1.08); }
+}
+
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative; z-index: 1;
+}
+
+/* ── WORDMARK ── */
+.wordmark {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 36px;
+  padding: 0 4px;
+}
+.wordmark-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: rgba(30,30,50,.75);
+  letter-spacing: .08em;
+}
+.wordmark::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, rgba(255,255,255,.6), transparent);
+}
+
+/* ── GLASS CARD ── */
+.card {
+  background: var(--glass);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1.5px solid var(--glass-border);
+  border-radius: var(--r);
+  padding: 28px 24px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.8);
+  transition: background .2s, box-shadow .2s, transform .2s;
+}
+.card:hover {
+  background: var(--glass-hover);
+  box-shadow: 0 16px 48px rgba(0,0,0,.13), inset 0 1px 0 rgba(255,255,255,.9);
+  transform: translateY(-2px);
+}
+
+.card-tag {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.rose  .card-tag { color: var(--rose); }
+.teal  .card-tag { color: var(--teal); }
+.amber .card-tag { color: var(--amber); }
+
+.card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.55rem;
+  font-weight: 400;
+  line-height: 1.25;
+  margin-bottom: 22px;
+  color: var(--ink);
+}
+
+/* ── FIELDS ── */
+.field { margin-bottom: 14px; }
+.field-row { display: flex; gap: 12px; }
+.field-row .field { flex: 1; }
+
+label {
+  display: block;
+  font-size: .73rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 6px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,.55);
+  border: 1.5px solid rgba(255,255,255,.7);
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+  outline: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color .18s, background .18s, box-shadow .18s;
+  appearance: none;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.06);
+}
+input:focus, select:focus {
+  border-color: rgba(255,255,255,.95);
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.35), inset 0 1px 3px rgba(0,0,0,.04);
+}
+input::placeholder { color: #aab; }
+
+/* ── BUTTON ── */
+.btn {
+  width: 100%; margin-top: 6px;
+  padding: 14px;
+  border: 1.5px solid rgba(255,255,255,.5);
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #fff;
+  backdrop-filter: blur(8px);
+  transition: opacity .18s, transform .12s, box-shadow .18s;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+}
+.btn:hover  { opacity:.9; box-shadow: 0 6px 24px rgba(0,0,0,.2); }
+.btn:active { transform: scale(.98); }
+.rose  .btn  { background: linear-gradient(135deg,#c8564e,#a84040); }
+.teal  .btn  { background: linear-gradient(135deg,#2e9878,#1e7058); }
+.amber .btn  { background: linear-gradient(135deg,#c07828,#9a5e18); }
+
+/* ── RESULT ── */
+.result {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 14px;
+  animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
+  border: 1.5px solid rgba(255,255,255,.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.result.show { display: block; }
+.rose  .result { background: rgba(192,80,72,.10); }
+.teal  .result { background: rgba(42,138,112,.10); }
+.amber .result { background: rgba(176,112,32,.10); }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.95) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.r-row { display: flex; align-items: baseline; gap: 8px; }
+.r-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  font-weight: 400;
+  line-height: 1;
+}
+.r-unit { font-size: .8rem; font-weight: 600; color: var(--mid); letter-spacing: .08em; text-transform: uppercase; }
+.r-clasif { margin-top: 8px; font-size: .95rem; font-weight: 600; }
+.r-sub    { margin-top: 5px; font-size: .85rem; color: var(--mid); font-weight: 500; }
+.r-note   { margin-top: 10px; font-size: .78rem; color: var(--soft); line-height: 1.5; font-style: italic; }
+
+/* ── SCALE ── */
+.scale-wrap { margin: 14px 0 2px; }
+.scale-bar {
+  height: 6px; border-radius: 6px;
+  background: linear-gradient(to right,#5baee0,#5bbf8e,#e8c44a,#e07a3a,#d44e4e);
+  position: relative; margin-bottom: 6px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.1);
+}
+.scale-dot {
+  position: absolute; top: 50%;
+  width: 14px; height: 14px;
+  background: #fff; border: 2.5px solid var(--ink);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: left .5s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.scale-labels {
+  display: flex; justify-content: space-between;
+  font-size: .65rem; color: var(--soft); letter-spacing: .04em; font-weight: 600;
+}
+
+/* ── FORMULA SECTION ── */
+.formula-toggle {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 18px;
+  cursor: pointer;
+  user-select: none;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  opacity: .8;
+  transition: opacity .15s;
+}
+.formula-toggle:hover { opacity: 1; }
+.formula-toggle .arrow {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.6);
+  display: grid; place-items: center;
+  font-size: .7rem;
+  transition: transform .2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
+}
+.formula-toggle .arrow.open { transform: rotate(180deg); }
+
+.formula-box {
+  display: none;
+  margin-top: 12px;
+  padding: 16px;
+  background: rgba(255,255,255,.4);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.6);
+  font-size: .82rem;
+  line-height: 1.65;
+  color: var(--mid);
+  animation: fadeDown .2s ease;
+}
+.formula-box.open { display: block; }
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-4px); }
+  to   { opacity:1; transform: none; }
+}
+.formula-box strong { color: var(--ink); font-weight: 700; display: block; margin-bottom: 4px; }
+.formula-box code {
+  display: block;
+  margin: 6px 0;
+  padding: 8px 12px;
+  background: rgba(255,255,255,.55);
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: .8rem;
+  color: var(--ink);
+  border: 1px solid rgba(255,255,255,.7);
+}
+.formula-box .ref {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,0,0,.06);
+  font-size: .75rem;
+  color: var(--soft);
+}
+.formula-box .ref a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(0,0,0,.2);
+}
+
+/* ── DIVIDER ── */
+.formula-box hr { border: none; border-top: 1px solid rgba(0,0,0,.08); margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div class="page">
+
+  <div class="wordmark">
+    <span class="wordmark-text">LauriAI</span>
+  </div>
+
+  <!-- ── IMC ADULTO ── -->
+  <div class="card rose">
+    <div class="card-tag">Adulto</div>
+    <h2>Índice de Masa Corporal</h2>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Edad</label>
+        <input id="a-edad" type="number" min="18" max="120" placeholder="38"/>
+      </div>
+      <div class="field">
+        <label>Sexo</label>
+        <select id="a-sexo">
+          <option value="F">Femenino</option>
+          <option value="M">Masculino</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Altura (cm)</label>
+        <input id="a-altura" type="number" placeholder="156"/>
+      </div>
+      <div class="field">
+        <label>Peso (kg)</label>
+        <input id="a-peso" type="number" step="0.1" placeholder="70.8"/>
+      </div>
+    </div>
+    <button class="btn" onclick="calcA()">Calcular</button>
+
+    <div class="result" id="a-r">
+      <div class="r-row">
+        <span class="r-num" id="a-imc">—</span>
+        <span class="r-unit">IMC</span>
+      </div>
+      <div class="r-clasif" id="a-clasif"></div>
+      <div class="scale-wrap">
+        <div class="scale-bar"><div class="scale-dot" id="a-dot" style="left:50%"></div></div>
+        <div class="scale-labels"><span>Bajo</span><span>Normal</span><span>Sobrepeso</span><span>Obeso</span></div>
+      </div>
+      <div class="r-sub" id="a-extra"></div>
+      <div class="r-note">Orientativo — no reemplaza valoración clínica.</div>
+    </div>
+
+    <div class="formula-toggle" onclick="toggleFormula('fa')">
+      <span class="arrow" id="fa-arrow">▾</span>
+      Ver fórmulas y referencias
+    </div>
+    <div class="formula-box" id="fa">
+      <strong>1. IMC (Quetelet, 1832)</strong>
+      <code>IMC = Peso (kg) ÷ Altura² (m)</code>
+      Clasificación según criterios de la <em>Organización Mundial de la Salud (OMS)</em>.
+      <hr/>
+      <strong>2. Porcentaje de grasa corporal (Deurenberg et al., 1991)</strong>
+      <code>%Grasa = (1.20 × IMC) + (0.23 × Edad) − (10.8 × Sexo) − 5.4</code>
+      Sexo: Masculino = 1, Femenino = 0.
+      <hr/>
+      <strong>3. Peso ideal (Fórmula de Devine, 1974)</strong>
+      <code>Hombres: 50 kg + 2.3 × (talla en cm − 152.4) / 2.54</code>
+      <code>Mujeres: 45.5 kg + 2.3 × (talla en cm − 152.4) / 2.54</code>
+      <div class="ref">
+        📄 Deurenberg P et al. <em>Br J Nutr.</em> 1991;65(2):105–14.<br/>
+        📄 Devine BJ. <em>Drug Intell Clin Pharm.</em> 1974;8:650–5.<br/>
+        📄 OMS. <em>Obesity: Preventing and Managing the Global Epidemic.</em> 2000.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── IMC NIÑO ── -->
+  <div class="card teal">
+    <div class="card-tag">2 – 20 años</div>
+    <h2>IMC Pediátrico</h2>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Años</label>
+        <input id="n-edad" type="number" min="2" max="20" placeholder="10"/>
+      </div>
+      <div class="field">
+        <label>Meses</label>
+        <input id="n-meses" type="number" min="0" max="11" placeholder="0"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Sexo</label>
+      <select id="n-sexo">
+        <option value="F">Niña</option>
+        <option value="M">Niño</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Estatura (cm)</label>
+        <input id="n-altura" type="number" placeholder="135"/>
+      </div>
+      <div class="field">
+        <label>Peso (kg)</label>
+        <input id="n-peso" type="number" step="0.1" placeholder="32.5"/>
+      </div>
+    </div>
+    <button class="btn" onclick="calcN()">Calcular</button>
+
+    <div class="result" id="n-r">
+      <div class="r-row">
+        <span class="r-num" id="n-imc">—</span>
+        <span class="r-unit">IMC</span>
+      </div>
+      <div class="r-clasif" id="n-clasif"></div>
+      <div class="r-note">El IMC infantil requiere percentiles por edad y sexo. Consultar siempre al pediatra.</div>
+    </div>
+
+    <div class="formula-toggle" onclick="toggleFormula('fn')">
+      <span class="arrow" id="fn-arrow">▾</span>
+      Ver fórmulas y referencias
+    </div>
+    <div class="formula-box" id="fn">
+      <strong>IMC pediátrico (misma fórmula base)</strong>
+      <code>IMC = Peso (kg) ÷ Estatura² (m)</code>
+      En menores de 20 años el IMC <strong>no se clasifica igual que en adultos</strong>. Debe evaluarse según tablas de percentiles específicas por sexo y edad de los <em>CDC / OMS</em>.
+      <hr/>
+      Interpretación orientativa usada en esta app:
+      <code>&lt; 14.5 → Bajo peso</code>
+      <code>14.5 – 18.4 → Normal</code>
+      <code>18.5 – 24.9 → Posible sobrepeso</code>
+      <code>≥ 25 → Posible obesidad</code>
+      <div class="ref">
+        📄 WHO. <em>Growth Reference 5–19 years.</em> who.int/tools/growth-reference-data-for-5to19-years<br/>
+        📄 CDC. <em>BMI for Children and Teens.</em> cdc.gov/bmi<br/>
+        📄 Must A, Dallal GE, Dietz WH. <em>Am J Clin Nutr.</em> 1991;53:839–46.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAM ── -->
+  <div class="card amber">
+    <div class="card-tag">Hemodinámica</div>
+    <h2>Presión Arterial Media</h2>
+
+    <div class="field">
+      <label>Sistólica (mmHg)</label>
+      <input id="p-sist" type="number" placeholder="120"/>
+    </div>
+    <div class="field">
+      <label>Diastólica (mmHg)</label>
+      <input id="p-diast" type="number" placeholder="80"/>
+    </div>
+    <button class="btn" onclick="calcP()">Calcular</button>
+
+    <div class="result" id="p-r">
+      <div class="r-row">
+        <span class="r-num" id="p-pam">—</span>
+        <span class="r-unit">mmHg</span>
+      </div>
+      <div class="r-clasif" id="p-clasif"></div>
+      <div class="r-sub" id="p-pp"></div>
+      <div class="r-note">Referencia normal: 70 – 100 mmHg</div>
+    </div>
+
+    <div class="formula-toggle" onclick="toggleFormula('fp')">
+      <span class="arrow" id="fp-arrow">▾</span>
+      Ver fórmulas y referencias
+    </div>
+    <div class="formula-box" id="fp">
+      <strong>PAM — Fórmula estándar clínica</strong>
+      <code>PAM = Diastólica + (Sistólica − Diastólica) ÷ 3</code>
+      Equivalente a:
+      <code>PAM = (Sistólica + 2 × Diastólica) ÷ 3</code>
+      Esta aproximación asume que el ciclo cardíaco dedica aproximadamente <strong>⅓ a la sístole</strong> y <strong>⅔ a la diástole</strong>.
+      <hr/>
+      <strong>Interpretación clínica:</strong>
+      <code>PAM &lt; 60 mmHg → Perfusión orgánica comprometida</code>
+      <code>PAM 70 – 100 mmHg → Rango normal</code>
+      <code>PAM &gt; 100 mmHg → Hipertensión — evaluar con médico</code>
+      <div class="ref">
+        📄 Magder SA. <em>Crit Care Med.</em> 2014;42(5):1209–14.<br/>
+        📄 Asfar P et al. <em>N Engl J Med.</em> 2014;370:1583–93.<br/>
+        📄 Marik PE. <em>Handbook of Evidence-Based Critical Care.</em> Springer, 2010.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+const $ = id => document.getElementById(id);
+const num = id => parseFloat($(id).value);
+
+/* ── FÓRMULAS TOGGLE ── */
+function toggleFormula(id) {
+  const box = $(id);
+  const arrow = $(id + '-arrow');
+  const open = box.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+
+/* ── IMC ADULTO ── */
+function calcA() {
+  const edad=num('a-edad'), altura=num('a-altura'), peso=num('a-peso'), sexo=$('a-sexo').value;
+  if([edad,altura,peso].some(isNaN)||altura<=0||peso<=0) return;
+  const h=altura/100, imc=+(peso/(h*h)).toFixed(1);
+  const s=sexo==='M'?1:0;
+  const grasa=+((1.20*imc)+(0.23*edad)-(10.8*s)-5.4).toFixed(1);
+  const hIn=(altura-152.4)/2.54, base=sexo==='M'?50:45.5;
+  const ideal=+(base+2.3*hIn).toFixed(1);
+  const limits=[16,17,18.5,25,30,35,40,Infinity];
+  const labels=['Muy bajo peso','Bajo peso severo','Bajo peso','Normal ✓','Sobrepeso','Obeso clase I','Obeso clase II','Obeso clase III'];
+  const icons=['🔴','🟠','🟡','🟢','🟡','🟠','🔴','🔴'];
+  const idx=limits.findIndex(l=>imc<l);
+  const pct=Math.min(Math.max((imc-15)/25,0),1)*100;
+  $('a-imc').textContent=imc;
+  $('a-clasif').textContent=icons[idx]+' '+labels[idx];
+  $('a-extra').textContent='Peso ideal: '+ideal+' kg  ·  Grasa estimada: '+grasa+'%';
+  $('a-dot').style.left=pct+'%';
+  const r=$('a-r');
+  r.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>r.classList.add('show')));
+}
+
+/* ── IMC NIÑO ── */
+function calcN() {
+  const edad=num('n-edad'), meses=num('n-meses')||0, altura=num('n-altura'), peso=num('n-peso');
+  if([edad,altura,peso].some(isNaN)||edad<2||edad>20||altura<=0||peso<=0) return;
+  const h=altura/100, imc=+(peso/(h*h)).toFixed(1);
+  const c=imc<14.5?'🔵 Bajo peso':imc<18.5?'🟢 Normal':imc<25?'🟡 Posible sobrepeso':'🔴 Posible obesidad';
+  $('n-imc').textContent=imc;
+  $('n-clasif').textContent=c+' — '+edad+' años '+meses+' meses';
+  const r=$('n-r');
+  r.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>r.classList.add('show')));
+}
+
+/* ── PAM ── */
+function calcP() {
+  const sist=num('p-sist'), diast=num('p-diast');
+  if([sist,diast].some(isNaN)||sist<=diast||diast<=0) return;
+  const pam=+(diast+(sist-diast)/3).toFixed(1);
+  const pp=+(sist-diast).toFixed(0);
+  const c=pam<60?'🔴 Perfusión comprometida':pam<70?'⚠️ PAM límite baja':pam<=100?'✅ PAM normal':'⚠️ PAM elevada';
+  $('p-pam').textContent=pam;
+  $('p-clasif').textContent=c;
+  $('p-pp').textContent='Presión de pulso: '+pp+' mmHg';
+  const r=$('p-r');
+  r.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>r.classList.add('show')));
+}
+
+/* Enter en inputs */
+document.querySelectorAll('input').forEach(i=>
+  i.addEventListener('keydown',e=>{
+    if(e.key==='Enter') i.closest('.card').querySelector('.btn').click();
+  })
+);
+</script>
+</body>
+</html>
