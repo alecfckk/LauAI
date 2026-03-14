@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LauriAI — Calculadoras</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:    #f5f3ef;
+  --white: #ffffff;
+  --ink:   #1c1c1c;
+  --mid:   #8a8680;
+  --line:  #e4e0da;
+  --rose:  #c0574a;
+  --teal:  #2d8f7b;
+  --amber: #b07830;
+  --r: 4px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 60px 24px 80px;
+}
+
+.page { max-width: 860px; margin: 0 auto; }
+
+/* WORDMARK */
+.wordmark {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 1.15rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 52px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.wordmark::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2px;
+}
+
+/* CARD */
+.card {
+  background: var(--white);
+  padding: 32px 28px 28px;
+  transition: box-shadow .25s;
+}
+.card:hover { box-shadow: 0 8px 40px rgba(0,0,0,.07); z-index: 1; position: relative; }
+
+.card-tag {
+  font-size: .68rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.rose  .card-tag { color: var(--rose); }
+.teal  .card-tag { color: var(--teal); }
+.amber .card-tag { color: var(--amber); }
+
+.card h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: 1.45rem;
+  line-height: 1.25;
+  margin-bottom: 24px;
+}
+
+/* FIELDS */
+.field { margin-bottom: 14px; }
+.field-row { display: flex; gap: 10px; }
+.field-row .field { flex: 1; }
+
+label {
+  display: block;
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mid);
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+input, select {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  font-family: 'Jost', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .18s, background .18s;
+  appearance: none;
+}
+input:focus, select:focus { border-color: var(--ink); background: #fff; }
+
+/* BUTTON */
+.btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Jost', sans-serif;
+  font-size: .82rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #fff;
+  transition: opacity .18s, transform .12s;
+}
+.btn:hover  { opacity: .88; }
+.btn:active { transform: scale(.98); }
+.rose  .btn  { background: var(--rose); }
+.teal  .btn  { background: var(--teal); }
+.amber .btn  { background: var(--amber); }
+
+/* RESULT */
+.result {
+  display: none;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  animation: up .28s ease;
+}
+.result.show { display: block; }
+@keyframes up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.r-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.r-unit {
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-left: 5px;
+  vertical-align: middle;
+}
+.r-clasif { margin-top: 8px; font-size: .85rem; font-weight: 500; }
+.r-sub    { margin-top: 5px; font-size: .78rem; color: var(--mid); }
+.r-note   { margin-top: 10px; font-size: .71rem; color: var(--mid); font-style: italic; line-height: 1.55; }
+
+/* SCALE */
+.scale-wrap { margin-top: 14px; }
+.scale-bar {
+  height: 3px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #5baee0, #5bbf8e, #e8c44a, #e07a3a, #d44e4e);
+  position: relative;
+  margin-bottom: 5px;
+}
+.scale-dot {
+  position: absolute; top: 50%;
+  width: 9px; height: 9px;
+  background: var(--ink); border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: left .5s cubic-bezier(.34,1.56,.64,1);
+}
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: .6rem;
+  color: var(--mid);
+  letter-spacing: .04em;
+}
+
+@media (max-width: 560px) {
+  body { padding: 36px 14px 60px; }
+  .wordmark { margin-bottom: 28px; }
+  .card { padding: 24px 20px 22px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="wordmark">LauriAI</div>
+
+  <div class="grid">
+
+    <!-- IMC ADULTO -->
+    <div class="card rose">
+      <div class="card-tag">Adulto</div>
+      <h2>Índice de<br>Masa Corporal</h2>
+      <div class="field-row">
+        <div class="field">
+          <label>Edad</label>
+          <input id="a-edad" type="number" min="18" max="120" placeholder="38" />
+        </div>
+        <div class="field">
+          <label>Sexo</label>
+          <select id="a-sexo">
+            <option value="F">Femenino</option>
+            <option value="M">Masculino</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Altura (cm)</label>
+          <input id="a-altura" type="number" placeholder="156" />
+        </div>
+        <div class="field">
+          <label>Peso (kg)</label>
+          <input id="a-peso" type="number" step="0.1" placeholder="70.8" />
+        </div>
+      </div>
+      <button class="btn" onclick="calcA()">Calcular</button>
+      <div class="result" id="a-r">
+        <div><span class="r-num" id="a-imc">—</span><span class="r-unit">IMC</span></div>
+        <div class="r-clasif" id="a-clasif"></div>
+        <div class="scale-wrap">
+          <div class="scale-bar"><div class="scale-dot" id="a-dot" style="left:50%"></div></div>
+          <div class="scale-labels"><span>Bajo</span><span>Normal</span><span>Sobrepeso</span><span>Obeso</span></div>
+        </div>
+        <div class="r-sub" id="a-extra"></div>
+        <div class="r-note">Orientativo — consulta a un profesional de la salud.</div>
+      </div>
+    </div>
+
+    <!-- IMC NIÑO -->
+    <div class="card teal">
+      <div class="card-tag">2 – 20 años</div>
+      <h2>IMC<br>Pediátrico</h2>
+      <div class="field-row">
+        <div class="field">
+          <label>Años</label>
+          <input id="n-edad" type="number" min="2" max="20" placeholder="10" />
+        </div>
+        <div class="field">
+          <label>Meses</label>
+          <input id="n-meses" type="number" min="0" max="11" placeholder="0" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Sexo</label>
+        <select id="n-sexo">
+          <option value="F">Niña</option>
+          <option value="M">Niño</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Estatura (cm)</label>
+          <input id="n-altura" type="number" placeholder="135" />
+        </div>
+        <div class="field">
+          <label>Peso (kg)</label>
+          <input id="n-peso" type="number" step="0.1" placeholder="32.5" />
+        </div>
+      </div>
+      <button class="btn" onclick="calcN()">Calcular</button>
+      <div class="result" id="n-r">
+        <div><span class="r-num" id="n-imc">—</span><span class="r-unit">IMC</span></div>
+        <div class="r-clasif" id="n-clasif"></div>
+        <div class="r-note">El IMC infantil depende de percentiles por edad y sexo. Consultar siempre al pediatra.</div>
+      </div>
+    </div>
+
+    <!-- PAM -->
+    <div class="card amber">
+      <div class="card-tag">Hemodinámica</div>
+      <h2>Presión Arterial<br>Media</h2>
+      <div class="field">
+        <label>Sistólica (mmHg)</label>
+        <input id="p-sist" type="number" placeholder="120" />
+      </div>
+      <div class="field">
+        <label>Diastólica (mmHg)</label>
+        <input id="p-diast" type="number" placeholder="80" />
+      </div>
+      <button class="btn" onclick="calcP()">Calcular</button>
+      <div class="result" id="p-r">
+        <div><span class="r-num" id="p-pam">—</span><span class="r-unit">mmHg</span></div>
+        <div class="r-clasif" id="p-clasif"></div>
+        <div class="r-sub" id="p-pp"></div>
+        <div class="r-note">Referencia normal: 70 – 100 mmHg</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const num = id => parseFloat($(id).value);
+
+function calcA() {
+  const edad=num('a-edad'), altura=num('a-altura'), peso=num('a-peso'), sexo=$('a-sexo').value;
+  if([edad,altura,peso].some(isNaN)||altura<=0||peso<=0) return;
+  const h=altura/100, imc=+(peso/(h*h)).toFixed(1);
+  const s=sexo==='M'?1:0;
+  const grasa=+((1.20*imc)+(0.23*edad)-(10.8*s)-5.4).toFixed(1);
+  const hIn=(altura-152.4)/2.54, base=sexo==='M'?50:45.5;
+  const ideal=+(base+2.3*hIn).toFixed(1);
+  const limits=[16,17,18.5,25,30,35,40,Infinity];
+  const labels=['Muy bajo peso','Bajo peso severo','Bajo peso','Normal','Sobrepeso','Obeso I','Obeso II','Obeso III'];
+  const icons=['🔴','🟠','🟡','🟢','🟡','🟠','🔴','🔴'];
+  const idx=limits.findIndex(l=>imc<l);
+  const pct=Math.min(Math.max((imc-15)/25,0),1)*100;
+  $('a-imc').textContent=imc;
+  $('a-clasif').textContent=icons[idx]+' '+labels[idx];
+  $('a-extra').textContent='Peso ideal '+ideal+' kg · Grasa ~'+grasa+'%';
+  $('a-dot').style.left=pct+'%';
+  $('a-r').classList.add('show');
+}
+
+function calcN() {
+  const edad=num('n-edad'), meses=num('n-meses')||0, altura=num('n-altura'), peso=num('n-peso');
+  if([edad,altura,peso].some(isNaN)||edad<2||edad>20) return;
+  const h=altura/100, imc=+(peso/(h*h)).toFixed(1);
+  const c=imc<14.5?'🔵 Bajo peso':imc<18.5?'🟢 Normal':imc<25?'🟡 Posible sobrepeso':'🔴 Posible obesidad';
+  $('n-imc').textContent=imc;
+  $('n-clasif').textContent=c+' — '+edad+'a '+meses+'m';
+  $('n-r').classList.add('show');
+}
+
+function calcP() {
+  const sist=num('p-sist'), diast=num('p-diast');
+  if([sist,diast].some(isNaN)||sist<=diast||diast<=0) return;
+  const pam=+(diast+(sist-diast)/3).toFixed(1);
+  const pp=+(sist-diast).toFixed(0);
+  const c=pam<70?'⚠️ PAM baja':pam<=100?'✅ PAM normal':'⚠️ PAM elevada';
+  $('p-pam').textContent=pam;
+  $('p-clasif').textContent=c;
+  $('p-pp').textContent='Presión de pulso: '+pp+' mmHg';
+  $('p-r').classList.add('show');
+}
+
+document.querySelectorAll('input').forEach(i=>
+  i.addEventListener('keydown',e=>{
+    if(e.key==='Enter') i.closest('.card').querySelector('.btn').click();
+  })
+);
+</script>
+</body>
+</html>
